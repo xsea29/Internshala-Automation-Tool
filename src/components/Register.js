@@ -1,30 +1,40 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 
 export default function Register() {
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  async function handleSubmit(e) {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null); // Clear any existing error before making the request
+    setError(null);
 
-    // Check if password and confirm password match
+    if (!username.trim() || !password || !confirmPassword) {
+      setError("Fill in all fields");
+      return;
+    }
     if (password !== confirmPassword) {
-      setError("Passwords do not match!");
+      setError("Passwords don't match");
+      return;
+    }
+    if (password.length < 6) {
+      setError("Use at least 6 characters");
       return;
     }
 
+    setLoading(true);
     try {
       const response = await fetch("http://127.0.0.1:5000/api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username: name, password: password }),
+        body: JSON.stringify({ username: username.trim(), password: password }),
       });
 
       const data = await response.json();
@@ -33,73 +43,85 @@ export default function Register() {
         localStorage.setItem("token", "fake-jwt-token");
         navigate("/login");
       } else {
-        setError(data.message); // If registration fails, display message from API
+        setError(data.message);
       }
-    } catch (error) {
+    } catch (err) {
       setError("An error occurred. Please try again later.");
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="w-full h-screen sm:flex sm:flex-col sm:items-center">
-      <h1 className="sm:text-5xl text-3xl p-10">
-        <span className="text-stone-500 font-medium">Register to </span>
-        <span className="text-blue-500 font-medium">
-          Internshala Automation
-        </span>
-      </h1>
-      <form
-        onSubmit={handleSubmit}
-        className="w-[80vw] py-5 px-8 max-w-md sm:flex sm:flex-col gap-5 rounded border"
-      >
-        {error && <p className="text-red-500">{error}</p>}
-        <div className="flex flex-col">
-          <label className="text-sm text-blue-400">Name</label>
-          <input
-            className="outline-none p-2 border"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Enter name..."
-            required
-          />
-        </div>
-
-        <div className="flex flex-col">
-          <label className="text-sm text-blue-400">Password</label>
-          <input
-            className="outline-none p-2 border"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter password..."
-            required
-          />
-        </div>
-
-        <div className="flex flex-col">
-          <label className="text-sm text-blue-400">Confirm Password</label>
-          <input
-            className="outline-none p-2 border"
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder="Confirm your password..."
-            required
-          />
-        </div>
-
-        <button className="p-2 bg-blue-400 text-blue-100 font-medium hover:bg-blue-500 hover:text-blue-100 transition-colors duration-200">
-          Register
-        </button>
-
-        <a
-          href="/login"
-          class="text-sm text-stone-500 text-right hover:text-blue-500 hover:underline"
-        >
-          Already registered? Login
-        </a>
-      </form>
+    <div className="mx-auto flex min-h-[calc(100vh-3.5rem)] max-w-5xl items-start px-6 pt-24 md:pt-32">
+      <div className="w-full max-w-sm">
+        <h1 className="text-2xl font-bold tracking-tight">Create account</h1>
+        <p className="mt-1.5 text-[14px] text-gray-600">
+          Set up your account to start automating.
+        </p>
+        <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+          <div>
+            <label htmlFor="username" className="mb-1.5 block text-[13px] font-medium">
+              Username
+            </label>
+            <input
+              id="username"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="pick a username"
+              className="w-full h-11 px-3 py-2 border border-gray-300 rounded-md outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="password" className="mb-1.5 block text-[13px] font-medium">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="min 6 characters"
+              className="w-full h-11 px-3 py-2 border border-gray-300 rounded-md outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="confirmPassword" className="mb-1.5 block text-[13px] font-medium">
+              Confirm password
+            </label>
+            <input
+              id="confirmPassword"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="repeat password"
+              className="w-full h-11 px-3 py-2 border border-gray-300 rounded-md outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
+              required
+            />
+          </div>
+          <button 
+            type="submit" 
+            className="w-full inline-flex items-center justify-center px-4 py-2.5 bg-blue-400 text-blue-100 font-medium rounded-md hover:bg-blue-500 hover:text-blue-100 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={loading}
+          >
+            {loading ? "Creating..." : (
+              <>
+                Create account <ArrowRight className="ml-1 h-4 w-4" />
+              </>
+            )}
+          </button>
+        </form>
+        <p className="mt-6 text-[13px] text-gray-600">
+          Already have an account?{" "}
+          <Link to="/login" className="font-medium text-gray-800 underline decoration-gray-400 underline-offset-4 hover:decoration-gray-600">
+            Log in
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

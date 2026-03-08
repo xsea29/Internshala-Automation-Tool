@@ -1,14 +1,24 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 
 export default function Login({ setUserLoggedIn }) {
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  async function handleSubmit(e) {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
+
+    if (!username.trim() || !password) {
+      setError("Fill in all fields");
+      return;
+    }
+
+    setLoading(true);
     try {
       const response = await fetch("http://127.0.0.1:5000/api/login", {
         method: "POST",
@@ -16,7 +26,7 @@ export default function Login({ setUserLoggedIn }) {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({ username: name, password: password }),
+        body: JSON.stringify({ username: username.trim(), password: password }),
       });
 
       const data = await response.json();
@@ -24,62 +34,73 @@ export default function Login({ setUserLoggedIn }) {
       if (data.success) {
         localStorage.setItem("token", "fake-jwt-token");
         setUserLoggedIn(true);
-        navigate("/details", { state: { name, password } });
+        navigate("/apply", { state: { name: username, password } });
       } else {
         setError(data.message);
       }
-    } catch (error) {
+    } catch (err) {
       setError("An error occurred. Please try again later.");
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="w-full h-screen flex flex-col items-center md:flex md:flex-col md:items-center">
-      <h1 className="md:text-5xl text-4xl p-10 text-center">
-        <span className="text-stone-500  font-medium">Login to </span>
-        <span className="text-blue-500 font-medium md:font-medium">
-          Internshala Automation
-        </span>
-      </h1>
-      <form
-        onSubmit={handleSubmit}
-        className="w-[80vw] py-5 px-8 max-w-md flex flex-col item-center md:flex md:flex-col gap-5 border rounded-r-md rounded-md"
-      >
-        {error && <p className="text-red-500">{error}</p>}
-        <div className="flex flex-col">
-          <label className="text-sm text-blue-400">Name</label>
-          <input
-            className="outline-none p-2 border"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Enter name..."
-            required
-          />
-        </div>
-
-        <div className="flex flex-col">
-          <label className="text-sm text-blue-400">Password</label>
-          <input
-            className="outline-none p-2 border"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter name..."
-            required
-          />
-        </div>
-        <button className="p-2 bg-blue-400 text-blue-100 font-medium hover:bg-blue-500 hover:text-blue-100 transition-colors duration-200">
-          Login
-        </button>
-
-        <a
-          href="/register"
-          className="text-sm text-stone-500 text-right hover:text-blue-500 hover:underline"
-        >
-          New user? Register here!
-        </a>
-      </form>
+    <div className="mx-auto flex min-h-[calc(100vh-3.5rem)] max-w-5xl items-start px-6 pt-24 md:pt-32">
+      <div className="w-full max-w-sm">
+        <h1 className="text-2xl font-bold tracking-tight">Log in</h1>
+        <p className="mt-1.5 text-[14px] text-gray-600">
+          Welcome back. Enter your credentials below.
+        </p>
+        <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+          <div>
+            <label htmlFor="username" className="mb-1.5 block text-[13px] font-medium">
+              Username
+            </label>
+            <input
+              id="username"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="your username"
+              className="w-full h-11 px-3 py-2 border border-gray-300 rounded-md outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="password" className="mb-1.5 block text-[13px] font-medium">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              className="w-full h-11 px-3 py-2 border border-gray-300 rounded-md outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
+              required
+            />
+          </div>
+          <button 
+            type="submit" 
+            className="w-full inline-flex items-center justify-center px-4 py-2.5 bg-blue-400 text-blue-100 font-medium rounded-md hover:bg-blue-500 hover:text-blue-100 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={loading}
+          >
+            {loading ? "Signing in..." : (
+              <>
+                Continue <ArrowRight className="ml-1 h-4 w-4" />
+              </>
+            )}
+          </button>
+        </form>
+        <p className="mt-6 text-[13px] text-gray-600">
+          No account?{" "}
+          <Link to="/register" className="font-medium text-gray-800 underline decoration-gray-400 underline-offset-4 hover:decoration-gray-600">
+            Sign up
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

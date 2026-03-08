@@ -1,3 +1,115 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@layer base {
+  :root {
+    --background: 60 6% 97%;
+    --foreground: 240 6% 10%;
+
+    --card: 60 6% 99%;
+    --card-foreground: 240 6% 10%;
+
+    --popover: 60 6% 99%;
+    --popover-foreground: 240 6% 10%;
+
+    --primary: 240 5% 12%;
+    --primary-foreground: 60 6% 97%;
+
+    --secondary: 48 20% 93%;
+    --secondary-foreground: 240 5% 12%;
+
+    --muted: 48 10% 93%;
+    --muted-foreground: 240 4% 46%;
+
+    --accent: 145 58% 42%;
+    --accent-foreground: 60 6% 97%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 60 6% 97%;
+
+    --border: 40 8% 88%;
+    --input: 40 8% 85%;
+    --ring: 240 5% 12%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 240 5% 8%;
+    --sidebar-foreground: 48 10% 90%;
+    --sidebar-primary: 145 58% 42%;
+    --sidebar-primary-foreground: 60 6% 97%;
+    --sidebar-accent: 240 5% 15%;
+    --sidebar-accent-foreground: 48 10% 90%;
+    --sidebar-border: 240 5% 18%;
+    --sidebar-ring: 145 58% 42%;
+
+    --warm: 32 80% 55%;
+  }
+}
+
+@layer base {
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background: hsl(145 58% 42% / 0.15);
+  }
+}
+
+@layer components {
+  .grain {
+    position: relative;
+  }
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.025;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.35s ease-out both;
+}
