@@ -17,8 +17,7 @@ function App() {
       <BrowserRouter>
         <Navbar userLoggedIn={userLoggedIn} setUserLoggedIn={setUserLoggedIn} />
         <Routes>
-          <Route path="/" element={<Navigate replace to="homepage" />} />
-          <Route path="/homepage" element={<Homepage />} />
+          <Route path="/" element={<Homepage />} />
           <Route
             path="/login"
             element={

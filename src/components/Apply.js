@@ -154,7 +154,7 @@ export default function Apply() {
 
       try {
         // Step 1: Start the automation process with POST
-        const initResponse = await fetch("http://127.0.0.1:5000/api/apply-internships", {
+        const initResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/apply-internships`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -179,7 +179,7 @@ export default function Apply() {
 
         // Step 2: Connect to EventSource for real-time progress
         const eventSource = new EventSource(
-          `http://127.0.0.1:5000/api/apply-internships-stream?session=${sessionId}`
+          `${process.env.REACT_APP_BACKEND_URL}/api/apply-internships-stream?session=${sessionId}`
         );
         eventSourceRef.current = eventSource;
 
@@ -246,7 +246,7 @@ export default function Apply() {
 
     // Attempt to notify backend
     try {
-      await fetch("http://127.0.0.1:5000/api/stop-automation", {
+      await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/stop-automation`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ session_id: sessionIdRef.current }),
@@ -360,7 +360,7 @@ export default function Apply() {
   const isRunning = phase === "progress";
 
   return (
-    <div className="mx-auto flex min-h-[calc(100vh-3.5rem)] max-w-5xl items-start px-6 pt-24 md:pt-32">
+    <div className="mx-auto flex min-h-[calc(100vh-3.5rem)] max-w-5xl items-start px-6 pt-24 md:pt-32 pb-20">
       <div className="w-full max-w-2xl">
         {showConfetti && <ConfettiBurst />}
 

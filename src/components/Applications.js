@@ -11,7 +11,7 @@ export default function Applications() {
   useEffect(() => {
     const fetchApplications = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:5000/api/submitted-applications");
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/submitted-applications`);
         if (!response.ok) {
           throw new Error("Failed to fetch applications");
         }
