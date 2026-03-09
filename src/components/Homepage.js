@@ -8,7 +8,7 @@ export default function Homepage() {
       <section className="pb-20 pt-24 md:pt-32">
         <div className="max-w-2xl">
           <div className="mb-5 inline-block rounded-full border border-blue-400/30 bg-blue-400/8 px-3 py-1 text-[13px] font-medium text-blue-400 font-mono">
-            v1.0 — internshala automation
+            internshala automation
           </div>
           <h1 className="text-[clamp(2rem,5vw,3.25rem)] font-bold leading-[1.1] tracking-tight text-balance">
             Apply to internships while you sleep.
